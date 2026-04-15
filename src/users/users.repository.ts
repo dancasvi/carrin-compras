@@ -28,5 +28,11 @@ export class UsersRepository {
     return this.prisma.users.create({ data });
   }
 
+  async remove(id: number): Promise<users> {
+    return this.prisma.users.delete({
+      where: { id },
+    });
+  }
+
   // Aqui você pode adicionar métodos complexos de banco futuramente
 }
