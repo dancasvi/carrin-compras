@@ -1,27 +1,33 @@
-import { Injectable } from '@nestjs/common';
+import { ConflictException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { PrismaService } from '../prisma/prisma.service';
+import { UsersRepository } from './users.repository';
+import { UserMapper } from './user.mapper';
 
 @Injectable()
 export class UsersService {
-  constructor(private prisma: PrismaService) {}
-  create(createUserDto: CreateUserDto) {
-    return 'This action adds a new user';
+  constructor(private repository: UsersRepository) {}
+  async create(createUserDto: CreateUserDto) {
+    const newUser = await this.repository.create(createUserDto);
+    return UserMapper.toEntity(newUser);
   }
 
   async findAll() {
-    try {
-      return await this.prisma.users.findMany();
-    } catch (error) {
-      console.error("ERRO COMPLETO DO PRISMA:", error);
-      throw error;
-    }
+    const users = await this.repository.getAll();
+    return users.map(user => UserMapper.toEntity(user));
   }
 
-  findOne(id: number) {
-    // return `This action returns a #${id} user`;
-    return this.prisma.users.findUnique({ where: { id } });
+  async findOne(id: number) {
+    const user = await this.repository.getById(id);
+    if (!user) throw new NotFoundException('User not found');
+    // return user;
+    return UserMapper.toEntity(user);
+  }
+
+  async findByUsername(username: string) {
+    const user = await this.repository.getByUsername(username);
+    if (!user) throw new NotFoundException('Username not found');
+    return user
   }
 
   update(id: number, updateUserDto: UpdateUserDto) {
