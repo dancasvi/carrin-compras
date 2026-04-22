@@ -17,6 +17,13 @@ export class PrismaExceptionFilter implements ExceptionFilter {
           error: 'Conflict',
         });
         break;
+      case 'P2003':
+        response.status(HttpStatus.BAD_REQUEST).json({
+          statusCode: HttpStatus.BAD_REQUEST,
+          message: 'Não é possível excluir o registro pois ele possui listas de compras vinculadas à ele.',
+          error: 'Foreign Key Constraint',
+        });
+      break;
       case 'P2025': // Registro não encontrado
         response.status(HttpStatus.NOT_FOUND).json({
           statusCode: HttpStatus.NOT_FOUND,
@@ -28,7 +35,7 @@ export class PrismaExceptionFilter implements ExceptionFilter {
         // Se for outro erro do Prisma que não mapeamos ainda
         response.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
           statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
-          message: 'Erro interno no banco de dados.',
+          message: 'Erro interno no banco de dados: ' + message,
         });
         break;
     }
