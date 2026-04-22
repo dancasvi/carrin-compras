@@ -30,8 +30,10 @@ export class UsersService {
     return user
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
+  async update(id: number, updateUserDto: UpdateUserDto) {
+    const updatedUser = await this.repository.update(id, updateUserDto);
+    
+    return UserMapper.toEntity(updatedUser);
   }
 
   async remove(id: number) {
