@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "markets" ALTER COLUMN "state" SET DATA TYPE VARCHAR(50);
